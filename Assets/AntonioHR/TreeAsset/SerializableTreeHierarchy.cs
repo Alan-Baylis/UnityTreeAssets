@@ -27,27 +27,27 @@ namespace AntonioHR.TreeAsset
             return childrenDict[node].AsEnumerable();
         }
 
-        public void RemoveSelfAndChildren(T node)
+        public IEnumerable<T> RemoveSelfAndChildren(T node)
         {
-            UnattachFromParent(node);
+            var allRemoved = new List<T>();
+            allRemoved.Add(node);
+
+            DetachFromParent(node);
 
             foreach (var child in childrenDict[node])
             {
-                RemoveSelfAndChildren(child);
+                allRemoved.AddRange(RemoveSelfAndChildren(child));
             }
             childrenDict.Remove(node);
             parentsDict.Remove(node);
+            return allRemoved;
         }
-        public void RemoveSelfOnly(T node)
+        public void DetatchAllChildrenOf(T node)
         {
-            UnattachFromParent(node);
-
             foreach (var child in childrenDict[node])
             {
-                UnattachFromParent(child);
+                DetachFromParent(child);
             }
-            childrenDict.Remove(node);
-            parentsDict.Remove(node);
         }
 
         public void AddFloating(T node)
@@ -63,9 +63,29 @@ namespace AntonioHR.TreeAsset
                 UnlinkFromParent(child, oldParent);
             LinkToParent(child, newParent);
         }
-        public void UnattachFromParent(T child)
+        public void DetachFromParent(T child)
         {
             UnlinkFromParent(child, GetParentOf(child));
+        }
+
+        public void Swap(T one, T other)
+        {
+            //Updating in parents dict
+            var onesParent = GetParentOf(one);
+            var othersParent = GetParentOf(other);
+
+            parentsDict[one] = othersParent;
+            parentsDict[other] = onesParent;
+
+            //Updating in childrens Dict
+            var othersParentsChildren = childrenDict[othersParent];
+            var othersIndex = othersParentsChildren.IndexOf(other);
+
+            var onesParentsChildren = childrenDict[onesParent];
+            var onesIndex = onesParentsChildren.IndexOf(one);
+
+            othersParentsChildren[othersIndex] = one;
+            onesParentsChildren[onesIndex] = other;
         }
 
         private void LinkToParent(T child, T newParent)
