@@ -18,6 +18,13 @@ namespace AntonioHR.TreeAsset
         Dictionary<T, T> parentsDict;
 
 
+        public TreeNode Root
+        {
+            get
+            {
+                return root;
+            }
+        }
         public T GetParentOf(T node)
         {
             return parentsDict[node];
@@ -25,6 +32,10 @@ namespace AntonioHR.TreeAsset
         public IEnumerable<T> GetChildrenOf(T node)
         {
             return childrenDict[node].AsEnumerable();
+        }
+        public IEnumerable<T> GetAllFloating()
+        {
+            return parentsDict.Where(x => x.Value == null && x.Value != root).Select(x => x.Value);
         }
 
         public IEnumerable<T> RemoveSelfAndChildren(T node)
@@ -132,6 +143,7 @@ namespace AntonioHR.TreeAsset
             public SerializableDictionary<T, List<T>> hierarchy;
         }
         #endregion
+
     }
 
 }

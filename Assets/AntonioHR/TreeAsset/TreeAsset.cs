@@ -36,5 +36,33 @@ namespace AntonioHR.TreeAsset
                 GameObject.DestroyImmediate(node);
             }
         }
+
+        #region Debug
+        public void CreateDebugGameObjectHierarchy()
+        {
+            var obj = new GameObject("Debug Hierarchy");
+
+            var floatersObj = new GameObject("Floaters");
+            floatersObj.transform.parent = obj.transform;
+            foreach (var floater in hierarchy.GetAllFloating())
+            {
+                CreateDebugGameObjectHierachyRecursion(floatersObj, floater);
+            }
+
+            var mainHierarchy = new GameObject("Main");
+            mainHierarchy.transform.parent = obj.transform;
+
+            CreateDebugGameObjectHierachyRecursion(mainHierarchy, hierarchy.Root);
+        }
+        private void CreateDebugGameObjectHierachyRecursion(GameObject parent, TreeNode node)
+        {
+            var obj = new GameObject(string.Format("Node: {0}", node.name));
+            obj.transform.parent = parent.transform;
+            foreach (var child in hierarchy.GetChildrenOf(node))
+            {
+                CreateDebugGameObjectHierachyRecursion(obj, node);
+            }
+        }
+        #endregion
     }
 }
