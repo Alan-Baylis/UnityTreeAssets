@@ -9,18 +9,36 @@ namespace AntonioHR.TreeAsset
 {
     public class TreeAsset: ScriptableObject
     {
-        SerializableTreeHierarchy<TreeNode> hierarchy;
+        [SerializeField]
+        NodeTreeHierarchy hierarchy;
 
-        public TreeNode CreateNodeFloating()
+        public TreeNode Root
+        {
+            get
+            { 
+                return hierarchy.Root; 
+            }
+        }
+
+        private void Init()
+        {
+            TreeNode rootNode = ScriptableObject.CreateInstance<TreeNode>();
+            rootNode.name = "Root";
+            AssetDatabase.AddObjectToAsset(rootNode, this);
+            hierarchy.Init(rootNode);
+        }
+        public TreeNode CreateNodeFloating(string name = "Node")
         {
             TreeNode newNode = ScriptableObject.CreateInstance<TreeNode>();
+            newNode.name = name;
             AssetDatabase.AddObjectToAsset(newNode, this);
             hierarchy.AddFloating(newNode);
             return newNode;
         }
-        public TreeNode CreateChildFor(TreeNode parent)
+        public TreeNode CreateChildFor(TreeNode parent, string name = "Node")
         {
             TreeNode newNode = ScriptableObject.CreateInstance<TreeNode>();
+            newNode.name = name;
             AssetDatabase.AddObjectToAsset(newNode, this);
             hierarchy.AddFloating(newNode);
             hierarchy.ChangeParentOfTo(newNode, parent);
@@ -36,6 +54,8 @@ namespace AntonioHR.TreeAsset
                 GameObject.DestroyImmediate(node);
             }
         }
+
+
 
         #region Debug
         public void CreateDebugGameObjectHierarchy()
@@ -60,8 +80,29 @@ namespace AntonioHR.TreeAsset
             obj.transform.parent = parent.transform;
             foreach (var child in hierarchy.GetChildrenOf(node))
             {
-                CreateDebugGameObjectHierachyRecursion(obj, node);
+                CreateDebugGameObjectHierachyRecursion(obj, child);
             }
+        }
+        
+        [MenuItem("Assets/Create/Example Tree")]
+        public static void CreateExampleTree()
+        {
+            TreeAsset tree = ScriptableObject.CreateInstance<TreeAsset>();
+            AssetDatabase.CreateAsset(tree, "Assets/NewTree.asset");
+
+            AssetDatabase.SaveAssets();
+            tree.Init();
+
+            var compo = tree.CreateChildFor(tree.Root, "Sequence");
+
+            var m1 = tree.CreateChildFor(compo, "Music 1");
+            var deco = tree.CreateChildFor(compo, "Decorator");
+            var m2 = tree.CreateChildFor(deco, "Music 2");
+
+
+            var m3 = tree.CreateChildFor(tree.Root, "Music 3");
+
+            tree.CreateDebugGameObjectHierarchy();
         }
         #endregion
     }

@@ -7,18 +7,33 @@ using UnityEngine;
 namespace AntonioHR.TreeAsset
 {
     [Serializable]
+    public class NodeTreeHierarchy : SerializableTreeHierarchy<TreeNode> { }
+    [Serializable]
     public class SerializableTreeHierarchy<T>: ISerializationCallbackReceiver where T:class
     {
         [SerializeField]
-        private SerializedTree<T> serialized;
+        private SerializedTree serialized;
         [SerializeField]
         private T root;
+        [SerializeField]
+        private bool initialized = false;
 
         Dictionary<T, List<T>> childrenDict;
         Dictionary<T, T> parentsDict;
 
+        public SerializableTreeHierarchy()
+        {
+            childrenDict = new Dictionary<T, List<T>>();
+            parentsDict = new Dictionary<T, T>();
+        }
+        public void Init(T newRoot)
+        {
+            Debug.Assert(!initialized);
+            AddFloating(newRoot);
+            this.root = newRoot;
+        }
 
-        public TreeNode Root
+        public T Root
         {
             get
             {
@@ -35,7 +50,7 @@ namespace AntonioHR.TreeAsset
         }
         public IEnumerable<T> GetAllFloating()
         {
-            return parentsDict.Where(x => x.Value == null && x.Value != root).Select(x => x.Value);
+            return parentsDict.Where(x => x.Value == null && x.Key != root).Select(x => x.Key);
         }
 
         public IEnumerable<T> RemoveSelfAndChildren(T node)
@@ -114,7 +129,7 @@ namespace AntonioHR.TreeAsset
         #region Serialization
         public void OnAfterDeserialize()
         {
-            childrenDict = new Dictionary<T, List<T>>(serialized.hierarchy);
+            childrenDict = new Dictionary<T, List<T>>(serialized);
 
             GenerateChildrenDictionary();
         }
@@ -133,14 +148,14 @@ namespace AntonioHR.TreeAsset
 
         public void OnBeforeSerialize()
         {
-            serialized.hierarchy = new SerializableDictionary<T, List<T>>(childrenDict);
+            serialized = new SerializedTree(childrenDict);
         }
 
 
         [Serializable]
-        class SerializedTree<T>
+        public class SerializedTree : SerializableDictionary<T, List<T>>
         {
-            public SerializableDictionary<T, List<T>> hierarchy;
+            public SerializedTree(Dictionary<T, List<T>> dict) : base(dict) { }
         }
         #endregion
 
