@@ -12,5 +12,71 @@ MonoBehaviour:
   m_Name: NewTree
   m_EditorClassIdentifier: 
   hierarchy:
-    root: {fileID: 0}
-    initialized: 0
+    root: {fileID: 114603732461321646}
+    initialized: 1
+--- !u!114 &114392547956626728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49852b322322279459d1c5a09614dfad, type: 3}
+  m_Name: Sequence
+  m_EditorClassIdentifier: 
+--- !u!114 &114578632262651136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49852b322322279459d1c5a09614dfad, type: 3}
+  m_Name: Music 1
+  m_EditorClassIdentifier: 
+--- !u!114 &114603732461321646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49852b322322279459d1c5a09614dfad, type: 3}
+  m_Name: Root
+  m_EditorClassIdentifier: 
+--- !u!114 &114802406282484974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49852b322322279459d1c5a09614dfad, type: 3}
+  m_Name: Music 3
+  m_EditorClassIdentifier: 
+--- !u!114 &114843181760338220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49852b322322279459d1c5a09614dfad, type: 3}
+  m_Name: Music 2
+  m_EditorClassIdentifier: 
+--- !u!114 &114864682830485082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49852b322322279459d1c5a09614dfad, type: 3}
+  m_Name: Decorator
+  m_EditorClassIdentifier: 

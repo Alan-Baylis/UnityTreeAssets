@@ -31,6 +31,7 @@ namespace AntonioHR.TreeAsset
             Debug.Assert(!initialized);
             AddFloating(newRoot);
             this.root = newRoot;
+            initialized = true;
         }
 
         public T Root
@@ -155,6 +156,7 @@ namespace AntonioHR.TreeAsset
         [Serializable]
         public class SerializedTree : SerializableDictionary<T, List<T>>
         {
+            public SerializedTree() : base() { }
             public SerializedTree(Dictionary<T, List<T>> dict) : base(dict) { }
         }
         #endregion
