@@ -10,7 +10,7 @@ namespace AntonioHR.TreeAsset
     public class TreeAsset: ScriptableObject
     {
         [SerializeField]
-        NodeTreeHierarchy hierarchy;
+        SerializableTreeHierarchy hierarchy;
 
         public TreeNode Root
         {

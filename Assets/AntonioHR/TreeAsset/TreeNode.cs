@@ -8,5 +8,6 @@ namespace AntonioHR.TreeAsset
 {
     public class TreeNode: ScriptableObject
     {
+        public string dummyInfo;
     }
 }

@@ -7,26 +7,26 @@ using UnityEngine;
 namespace AntonioHR.TreeAsset
 {
     [Serializable]
-    public class NodeTreeHierarchy : SerializableTreeHierarchy<TreeNode> { }
-    [Serializable]
-    public class SerializableTreeHierarchy<T>: ISerializationCallbackReceiver where T:class
+    public class SerializableTreeHierarchy: ISerializationCallbackReceiver
     {
         [SerializeField]
         private SerializedTree serialized;
         [SerializeField]
-        private T root;
+        private TreeNode root;
         [SerializeField]
         private bool initialized = false;
 
-        Dictionary<T, List<T>> childrenDict;
-        Dictionary<T, T> parentsDict;
+        private Dictionary<TreeNode, TreeNodeList> descendancyDict;
+        private Dictionary<TreeNode, TreeNode> ascendancyDict;
+
+        
 
         public SerializableTreeHierarchy()
         {
-            childrenDict = new Dictionary<T, List<T>>();
-            parentsDict = new Dictionary<T, T>();
+            descendancyDict = new Dictionary<TreeNode, TreeNodeList>();
+            ascendancyDict = new Dictionary<TreeNode, TreeNode>();
         }
-        public void Init(T newRoot)
+        public void Init(TreeNode newRoot)
         {
             Debug.Assert(!initialized);
             AddFloating(newRoot);
@@ -34,130 +34,141 @@ namespace AntonioHR.TreeAsset
             initialized = true;
         }
 
-        public T Root
+        public TreeNode Root
         {
             get
             {
                 return root;
             }
         }
-        public T GetParentOf(T node)
+        public TreeNode GetParentOf(TreeNode node)
         {
-            return parentsDict[node];
+            return ascendancyDict[node];
         }
-        public IEnumerable<T> GetChildrenOf(T node)
+        public IEnumerable<TreeNode> GetChildrenOf(TreeNode node)
         {
-            return childrenDict[node].AsEnumerable();
+            return descendancyDict[node].AsEnumerable();
         }
-        public IEnumerable<T> GetAllFloating()
+        public IEnumerable<TreeNode> GetAllFloating()
         {
-            return parentsDict.Where(x => x.Value == null && x.Key != root).Select(x => x.Key);
+            return ascendancyDict.Where(x => x.Value == null && x.Key != root).Select(x => x.Key);
         }
 
-        public IEnumerable<T> RemoveSelfAndChildren(T node)
+        public IEnumerable<TreeNode> RemoveSelfAndChildren(TreeNode node)
         {
-            var allRemoved = new List<T>();
+            var allRemoved = new TreeNodeList();
             allRemoved.Add(node);
 
             DetachFromParent(node);
 
-            foreach (var child in childrenDict[node])
+            foreach (var child in descendancyDict[node])
             {
                 allRemoved.AddRange(RemoveSelfAndChildren(child));
             }
-            childrenDict.Remove(node);
-            parentsDict.Remove(node);
+            descendancyDict.Remove(node);
+            ascendancyDict.Remove(node);
             return allRemoved;
         }
-        public void DetatchAllChildrenOf(T node)
+        public void DetatchAllChildrenOf(TreeNode node)
         {
-            foreach (var child in childrenDict[node])
+            foreach (var child in descendancyDict[node])
             {
                 DetachFromParent(child);
             }
         }
 
-        public void AddFloating(T node)
+        public void AddFloating(TreeNode node)
         {
-            childrenDict.Add(node, new List<T>());
-            parentsDict.Add(node, null);
+            descendancyDict.Add(node, new TreeNodeList());
+            ascendancyDict.Add(node, null);
         }
 
-        public void ChangeParentOfTo(T child, T newParent)
+        public void ChangeParentOfTo(TreeNode child, TreeNode newParent)
         {
             var oldParent = GetParentOf(child);
             if(oldParent != null)
                 UnlinkFromParent(child, oldParent);
             LinkToParent(child, newParent);
         }
-        public void DetachFromParent(T child)
+        public void DetachFromParent(TreeNode child)
         {
             UnlinkFromParent(child, GetParentOf(child));
         }
 
-        public void Swap(T one, T other)
+        public void Swap(TreeNode one, TreeNode other)
         {
             //Updating in parents dict
             var onesParent = GetParentOf(one);
             var othersParent = GetParentOf(other);
 
-            parentsDict[one] = othersParent;
-            parentsDict[other] = onesParent;
+            ascendancyDict[one] = othersParent;
+            ascendancyDict[other] = onesParent;
 
             //Updating in childrens Dict
-            var othersParentsChildren = childrenDict[othersParent];
+            var othersParentsChildren = descendancyDict[othersParent];
             var othersIndex = othersParentsChildren.IndexOf(other);
 
-            var onesParentsChildren = childrenDict[onesParent];
+            var onesParentsChildren = descendancyDict[onesParent];
             var onesIndex = onesParentsChildren.IndexOf(one);
 
             othersParentsChildren[othersIndex] = one;
             onesParentsChildren[onesIndex] = other;
         }
 
-        private void LinkToParent(T child, T newParent)
+        private void LinkToParent(TreeNode child, TreeNode newParent)
         {
-            childrenDict[newParent].Add(child);
-            parentsDict[child] = newParent;
+            descendancyDict[newParent].Add(child);
+            ascendancyDict[child] = newParent;
         }
-        private void UnlinkFromParent(T child, T oldParent)
+        private void UnlinkFromParent(TreeNode child, TreeNode oldParent)
         {
-            childrenDict[oldParent].Remove(child);
-            parentsDict[child] = null;
+            descendancyDict[oldParent].Remove(child);
+            ascendancyDict[child] = null;
         }
 
 
         #region Serialization
         public void OnAfterDeserialize()
         {
-            childrenDict = new Dictionary<T, List<T>>(serialized);
+            descendancyDict = new Dictionary<TreeNode, TreeNodeList>();
 
-            GenerateChildrenDictionary();
+            foreach (var keyValuePair in serialized)
+            {
+                descendancyDict.Add(keyValuePair.Key, keyValuePair.Value);
+            }
+
+            GenerateAscendancyDictionary();
         }
 
-        private void GenerateChildrenDictionary()
+        private void GenerateAscendancyDictionary()
         {
-            parentsDict = new Dictionary<T, T>();
-            foreach (var entry in childrenDict)
+            ascendancyDict = new Dictionary<TreeNode, TreeNode>();
+            foreach (var entry in descendancyDict)
             {
                 foreach (var child in entry.Value)
                 {
-                    parentsDict.Add(child, entry.Key);
+                    ascendancyDict.Add(child, entry.Key);
                 }
             }
         }
 
         public void OnBeforeSerialize()
         {
-            serialized = new SerializedTree(childrenDict);
+            serialized = new SerializedTree(descendancyDict);
         }
 
+        [Serializable]
+        public class TreeNodeList : List<TreeNode>
+        {
+
+        }
 
         [Serializable]
-        public class SerializedTree : SerializableDictionary<T, List<T>>
+        public class SerializedTree : SerializableDictionary<TreeNode, TreeNodeList>
         {
+            public SerializableDictionary<TreeNode, TreeNodeList> dictionary;
             public SerializedTree() : base() { }
-            public SerializedTree(Dictionary<T, List<T>> dict) : base(dict) { }
+            public SerializedTree(Dictionary<TreeNode, TreeNodeList> dict) : base(dict) { }
         }
         #endregion
 
