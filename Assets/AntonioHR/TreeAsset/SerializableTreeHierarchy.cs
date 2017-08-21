@@ -23,11 +23,11 @@ namespace AntonioHR.TreeAsset
 
         public SerializableTreeHierarchy()
         {
-            descendancyDict = new Dictionary<TreeNode, TreeNodeList>();
-            ascendancyDict = new Dictionary<TreeNode, TreeNode>();
         }
         public void Init(TreeNode newRoot)
         {
+            descendancyDict = new Dictionary<TreeNode, TreeNodeList>();
+            ascendancyDict = new Dictionary<TreeNode, TreeNode>();
             Debug.Assert(!initialized);
             AddFloating(newRoot);
             this.root = newRoot;
@@ -132,9 +132,9 @@ namespace AntonioHR.TreeAsset
         {
             descendancyDict = new Dictionary<TreeNode, TreeNodeList>();
 
-            foreach (var keyValuePair in serialized)
-            {
-                descendancyDict.Add(keyValuePair.Key, keyValuePair.Value);
+            for (int i = 0; i < serialized.keys.Length; i++)
+			{
+                descendancyDict.Add(serialized.keys[i], serialized.values[i]);
             }
 
             GenerateAscendancyDictionary();
@@ -154,7 +154,8 @@ namespace AntonioHR.TreeAsset
 
         public void OnBeforeSerialize()
         {
-            serialized = new SerializedTree(descendancyDict);
+            if(descendancyDict != null)
+                serialized = new SerializedTree(descendancyDict);
         }
 
         [Serializable]
@@ -164,11 +165,25 @@ namespace AntonioHR.TreeAsset
         }
 
         [Serializable]
-        public class SerializedTree : SerializableDictionary<TreeNode, TreeNodeList>
+        public class SerializedTree
         {
-            public SerializableDictionary<TreeNode, TreeNodeList> dictionary;
-            public SerializedTree() : base() { }
-            public SerializedTree(Dictionary<TreeNode, TreeNodeList> dict) : base(dict) { }
+            public TreeNode[] keys;
+            public TreeNodeList[] values;
+            public SerializedTree(){ }
+
+            public SerializedTree(Dictionary<TreeNode, TreeNodeList> descendancyDict)
+            {
+                keys = new TreeNode[descendancyDict.Count];
+                values = new TreeNodeList[descendancyDict.Count];
+
+                int i = 0;
+                foreach (var keyValuePair in descendancyDict)
+                {
+                    keys[i] = keyValuePair.Key;
+                    values[i] = keyValuePair.Value;
+                    i++;
+                }
+            }
         }
         #endregion
 
