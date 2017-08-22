@@ -1,4 +1,5 @@
-﻿using AntonioHR.TreeAsset;
+﻿using AntonioHR;
+using AntonioHR.TreeAsset;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,22 +29,20 @@ public class DummyTree : TreeAsset<DummyTreeNode>
     {
         var obj = new GameObject("Debug Hierarchy");
 
-        var floatersObj = new GameObject("Floaters");
-        floatersObj.transform.parent = obj.transform;
-        foreach (var floater in FloatingNodes)
-        {
-            CreateDebugGameObjectHierarchyRecursion(floatersObj, floater);
-        }
-
-        var mainHierarchy = new GameObject("Main");
-        mainHierarchy.transform.parent = obj.transform;
+        var mainHierarchy = obj.CreateChild("Main");
 
         CreateDebugGameObjectHierarchyRecursion(mainHierarchy, Root);
+
+        foreach (var floater in FloatingNodes)
+        {
+            CreateDebugGameObjectHierarchyRecursion(obj, floater);
+        }
+
     }
     private void CreateDebugGameObjectHierarchyRecursion(GameObject parent, TreeNodeAsset node)
     {
-        var obj = new GameObject(string.Format("Node: {0}", node.name));
-        obj.transform.parent = parent.transform;
+        var obj = parent.CreateChild(string.Format("Node: {0}", node.name));
+
         foreach (var child in node.Children)
         {
             CreateDebugGameObjectHierarchyRecursion(obj, child);
