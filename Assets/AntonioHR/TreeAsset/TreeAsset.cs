@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AntonioHR.TreeAsset.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace AntonioHR.TreeAsset
     public class TreeAsset: ScriptableObject
     {
         [SerializeField]
-        SerializableTreeHierarchy hierarchy;
+        TreeHierarchyAsset hierarchy;
 
         public TreeNode Root
         {
@@ -22,17 +23,21 @@ namespace AntonioHR.TreeAsset
 
         private void Init()
         {
+            hierarchy = ScriptableObject.CreateInstance<TreeHierarchyAsset>();
+            AssetDatabase.AddObjectToAsset(hierarchy, this);
+            hierarchy.name = "Hierarchy";
+
             TreeNode rootNode = ScriptableObject.CreateInstance<TreeNode>();
             rootNode.name = "Root";
             AssetDatabase.AddObjectToAsset(rootNode, this);
-            hierarchy.Init(rootNode);
+            hierarchy.SetupRoot(rootNode);
         }
         public TreeNode CreateNodeFloating(string name = "Node")
         {
             TreeNode newNode = ScriptableObject.CreateInstance<TreeNode>();
             newNode.name = name;
             AssetDatabase.AddObjectToAsset(newNode, this);
-            hierarchy.AddFloating(newNode);
+            hierarchy.AddAsFloatingNode(newNode);
             return newNode;
         }
         public TreeNode CreateChildFor(TreeNode parent, string name = "Node")
@@ -40,19 +45,16 @@ namespace AntonioHR.TreeAsset
             TreeNode newNode = ScriptableObject.CreateInstance<TreeNode>();
             newNode.name = name;
             AssetDatabase.AddObjectToAsset(newNode, this);
-            hierarchy.AddFloating(newNode);
-            hierarchy.ChangeParentOfTo(newNode, parent);
+
+            hierarchy.AddAsFloatingNode(newNode);
+            newNode.ChangeParentTo(parent);
+
             return newNode;
         }
 
         public void DeleteNodeAndAllChildren(TreeNode node)
         {
-            var allRemoved = hierarchy.RemoveSelfAndChildren(node);
-
-            foreach (var removed in allRemoved)
-            {
-                GameObject.DestroyImmediate(node);
-            }
+            node.DeleteNodeAndChildren();
         }
 
 
@@ -64,7 +66,7 @@ namespace AntonioHR.TreeAsset
 
             var floatersObj = new GameObject("Floaters");
             floatersObj.transform.parent = obj.transform;
-            foreach (var floater in hierarchy.GetAllFloating())
+            foreach (var floater in hierarchy.FloatingNodes)
             {
                 CreateDebugGameObjectHierachyRecursion(floatersObj, floater);
             }
@@ -78,7 +80,7 @@ namespace AntonioHR.TreeAsset
         {
             var obj = new GameObject(string.Format("Node: {0}", node.name));
             obj.transform.parent = parent.transform;
-            foreach (var child in hierarchy.GetChildrenOf(node))
+            foreach (var child in node.Children)
             {
                 CreateDebugGameObjectHierachyRecursion(obj, child);
             }
