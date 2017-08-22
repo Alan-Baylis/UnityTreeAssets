@@ -17,19 +17,24 @@ namespace AntonioHR.TreeAsset.Internal
         internal List<TreeHierarchyNodeAsset> _floaters = new List<TreeHierarchyNodeAsset>();
         #endregion
 
-        public TreeNode Root
+        public TreeNodeAsset Root
         {
             get
             {
                 return _root == null ? null : _root._content;
             }
         }
-        public IEnumerable<TreeNode> FloatingNodes
+        public IEnumerable<TreeNodeAsset> FloatingNodes
         {
             get
             {
                 return _floaters.Select(x => x._content);
             }
+        }
+
+        public IEnumerable<T> GetFloatingNodes<T>() where T:TreeNodeAsset
+        {
+            return _floaters.Select(x => x._content as T);
         }
     }
 

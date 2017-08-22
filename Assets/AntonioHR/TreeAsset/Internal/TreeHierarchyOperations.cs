@@ -14,7 +14,7 @@ namespace AntonioHR.TreeAsset.Internal
         private const string nodeInHierarchyMsg = "Node is already in hierarchy";
         #endregion
 
-        public static void SetupRoot(this TreeHierarchyAsset tree, TreeNode root)
+        public static void SetupRoot(this TreeHierarchyAsset tree, TreeNodeAsset root)
         {
             Debug.Assert(tree._root == null);
 
@@ -22,7 +22,7 @@ namespace AntonioHR.TreeAsset.Internal
             tree._root = rootHierarchyNode;
             rootHierarchyNode._tree = tree;
         }
-        public static void AddAsFloatingNode(this TreeHierarchyAsset tree, TreeNode newNode)
+        public static void AddAsFloatingNode(this TreeHierarchyAsset tree, TreeNodeAsset newNode)
         {
             Debug.Assert(newNode._hierarchy == null, nodeInHierarchyMsg);
 
@@ -76,7 +76,7 @@ namespace AntonioHR.TreeAsset.Internal
             }
         }
 
-        private static TreeHierarchyNodeAsset CreateHierarchyNodeAndLink(this TreeHierarchyAsset tree, TreeNode node)
+        private static TreeHierarchyNodeAsset CreateHierarchyNodeAndLink(this TreeHierarchyAsset tree, TreeNodeAsset node)
         {
             Debug.Assert(node._hierarchy == null, nodeInHierarchyMsg);
 

@@ -9,16 +9,16 @@ namespace AntonioHR.TreeAsset
     public static class TreeOperations
     {
         #region TreeNode
-        public static void ChangeParentTo(this TreeNode node, TreeNode newParent)
+        public static void ChangeParentTo(this TreeNodeAsset node, TreeNodeAsset newParent)
         {
             node._hierarchy.ChangeParentTo(newParent._hierarchy);
         }
-        public static void UnattachFromParent(this TreeNode node)
+        public static void UnattachFromParent(this TreeNodeAsset node)
         {
             node._hierarchy.UnattachFromParent();
         }
   
-        public static void DeleteNodeAndChildren(this TreeNode self)
+        public static void DeleteNodeAndChildren(this TreeNodeAsset self)
         {
             self.UnattachFromParent();
 

@@ -18,7 +18,7 @@ namespace AntonioHR.TreeAsset.Internal
         [SerializeField]
         public bool _isFloating = false;
 
-        public TreeNode _content;
+        public TreeNodeAsset _content;
 
 
         public bool IsRoot { get { return _tree._root == this; } }
