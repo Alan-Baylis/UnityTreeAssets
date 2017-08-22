@@ -39,11 +39,11 @@ public class DummyTree : TreeAsset<DummyTreeNode>
         }
 
     }
-    private void CreateDebugGameObjectHierarchyRecursion(GameObject parent, TreeNodeAsset node)
+    private void CreateDebugGameObjectHierarchyRecursion(GameObject parent, DummyTreeNode node)
     {
-        var obj = parent.CreateChild(string.Format("Node: {0}", node.name));
+        var obj = parent.CreateChild(string.Format("Node: {0} Data: {1}", node.name, node.dummyData));
 
-        foreach (var child in node.Children)
+        foreach (var child in node.GetChildrenAs<DummyTreeNode>())
         {
             CreateDebugGameObjectHierarchyRecursion(obj, child);
         }
@@ -61,13 +61,17 @@ public class DummyTree : TreeAsset<DummyTreeNode>
         var compo = tree.CreateChildFor(tree.Root, "Sequence");
 
         var m1 = tree.CreateChildFor(compo, "Music 1");
+        m1.dummyData = 1;
+
         var deco = tree.CreateChildFor(compo, "Decorator");
         var m2 = tree.CreateChildFor(deco, "Music 2");
-
+        m2.dummyData = 42;
 
         var m3 = tree.CreateChildFor(tree.Root, "Music 3");
+        m3.dummyData = 999;
 
         var m4 = tree.CreateNodeFloating("Music 4");
+        m4.dummyData = 314;
 
         tree.CreateDebugGameObjectHierarchy();
     }

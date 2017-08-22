@@ -32,7 +32,7 @@ namespace AntonioHR.TreeAsset.Internal
             }
         }
 
-        public IEnumerable<T> GetFloatingNodes<T>() where T:TreeNodeAsset
+        public IEnumerable<T> GetFloatingNodesAs<T>() where T:TreeNodeAsset
         {
             return _floaters.Select(x => x._content as T);
         }

@@ -24,7 +24,7 @@ namespace AntonioHR.TreeAsset
         {
             get
             {
-                return hierarchy.GetFloatingNodes<T>();
+                return hierarchy.GetFloatingNodesAs<T>();
             }
         }
 
